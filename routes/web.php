@@ -1,7 +1,7 @@
 <?php
-use App\Http\Controllers\User\Auth\OtpController;
+use App\Http\Controllers\OtpController;
 use Illuminate\Support\Facades\Route;
-
+use App\Http\Controllers\Auth\RegisterController;
 Route::get('/', function () {
     return view('welcome');
 });
@@ -15,9 +15,8 @@ Route::middleware([
         return view('dashboard');
     })->name('dashboard');
 });
-Route::middleware(['auth'])->group(function () {
-    Route::get('/verify-otp', [OtpController::class, 'showOtpForm'])->name('otp.verify.form');
-    Route::post('/verify-otp', [OtpController::class, 'verifyOtp'])->name('otp.verify');
-    Route::post('/verify-otp/resend', [OtpController::class, 'resend'])->name('otp.resend');
-});
+Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('register');
+Route::post('/register', [RegisterController::class, 'register']);
+Route::get('/verify-otp', [OtpController::class, 'showOtpForm'])->name('otp.form');
+Route::post('/verify-otp', [OtpController::class, 'verifyOtp'])->name('otp.verify');
 
