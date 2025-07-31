@@ -15,29 +15,36 @@ class RegisterController extends Controller
 {
     public function showRegistrationForm()
     {
-        return view('auth.register'); // Jetstream đã có sẵn view này
+        return view('auth.register'); 
     }
 
     public function register(Request $request)
     {
         Validator::make($request->all(), [
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
+            'name' => 'required|string|max:255|unique:users,name',
+            'email' => 'required|string|email|max:255|unique:users,email',
             'password' => ['required', 'string', 'min:8', 'confirmed'],
+        ], [
+            'name.unique' => 'Tên người dùng đã tồn tại.',
+            'email.unique' => 'Email đã được sử dụng.',
         ])->validate();
 
-        $user = User::create([
+    session([
+        'otp_email' => $request->email,
+        'register_data' => [
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-        ]);
+        ]
+    ]);
 
+      
         // Gửi OTP
         $otpCode = rand(100000, 999999);
         $expiresAt = now()->addSeconds(120);
 
         DB::table('otps')->updateOrInsert(
-            ['user_id' => $user->id],
+            ['email' => $request->email, 'user_id' => null],
             [
                 'otp' => $otpCode,
                 'expires_at' => $expiresAt,
@@ -46,9 +53,10 @@ class RegisterController extends Controller
             ]
         );
 
-        Mail::to($user->email)->send(new OtpMail($otpCode));
+        Mail::to($request->email)->send(new OtpMail($otpCode)); 
 
-        session(['otp_user_id' => $user->id]);
+        
+         session(['otp_email' => $request->email]);
 
         return redirect()->route('otp.form')->with('status', 'OTP đã gửi, vui lòng xác thực.');
     }

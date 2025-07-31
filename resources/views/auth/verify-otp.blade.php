@@ -22,6 +22,10 @@
                 <x-button>
                     Xác thực
                 </x-button>
+                
+                <a href="{{ route('otp.resend') }}" class="underline text-sm text-gray-600 hover:text-gray-900 ml-4">
+                Gửi lại OTP
+                 </a>
             </div>
         </form>
     </x-authentication-card>

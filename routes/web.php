@@ -19,4 +19,5 @@ Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->na
 Route::post('/register', [RegisterController::class, 'register']);
 Route::get('/verify-otp', [OtpController::class, 'showOtpForm'])->name('otp.form');
 Route::post('/verify-otp', [OtpController::class, 'verifyOtp'])->name('otp.verify');
+Route::get('/resend-otp', [OtpController::class, 'resendOtp'])->name('otp.resend');
 

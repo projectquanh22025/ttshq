@@ -6,11 +6,12 @@
 
         <x-validation-errors class="mb-4" />
 
-        @session('status')
+        {{-- Hiển thị thông báo xác thực OTP thành công --}}
+        @if (session('success'))
             <div class="mb-4 font-medium text-sm text-green-600">
-                {{ $value }}
+                {{ session('success') }}
             </div>
-        @endsession
+        @endif
 
         <form method="POST" action="{{ route('login') }}">
             @csrf
