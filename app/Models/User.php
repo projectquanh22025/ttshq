@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -12,13 +11,7 @@ use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
-    use HasApiTokens;
-
-    /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory;
-    use HasProfilePhoto;
-    use Notifiable;
-    use TwoFactorAuthenticatable;
+    use HasApiTokens, HasFactory, HasProfilePhoto, Notifiable, TwoFactorAuthenticatable;
 
     /**
      * The attributes that are mass assignable.
@@ -26,9 +19,23 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $fillable = [
-        'name',
+        'shop_id',
+        'username',
+        'fullname',
+        'account_type',
         'email',
+        'email_verified_at',
         'password',
+        'password2',
+        'is_active',
+        'balance',
+        'remember_token',
+        'status',
+        'required_login_gmail',
+        'provider_id',
+        'google2fa_enable',
+        'google2fa_secret',
+        'two_factor_recovery_codes',
     ];
 
     /**
@@ -38,9 +45,24 @@ class User extends Authenticatable
      */
     protected $hidden = [
         'password',
+        'password2',
         'remember_token',
+        'google2fa_secret',
         'two_factor_recovery_codes',
-        'two_factor_secret',
+    ];
+
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array<string, string>
+     */
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+        'balance' => 'decimal:2',
+        'google2fa_enable' => 'boolean',
+        'required_login_gmail' => 'boolean',
+        'status' => 'integer',
+        'account_type' => 'integer',
     ];
 
     /**
@@ -53,21 +75,10 @@ class User extends Authenticatable
     ];
 
     /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
+     * Relationship: User has many OTPs
      */
-    protected function casts(): array
-    {
-        return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-        ];
-    }
-
-
     public function otps()
-{
-    return $this->hasMany(Otp::class);
-}
+    {
+        return $this->hasMany(Otp::class);
+    }
 }

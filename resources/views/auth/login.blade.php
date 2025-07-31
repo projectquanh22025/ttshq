@@ -44,6 +44,14 @@
                     {{ __('Log in') }}
                 </x-button>
             </div>
+            @if (session('warning'))
+                <div class="alert alert-warning">
+                    {{ session('warning') }}
+                    <br>
+                    <a href="{{ route('otp.form', ['email' => old('email')]) }}">Bấm vào đây để xác thực email</a>
+                </div>
+            @endif
+
         </form>
     </x-authentication-card>
 </x-guest-layout>

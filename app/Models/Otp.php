@@ -6,17 +6,21 @@ use Illuminate\Database\Eloquent\Model;
 
 class Otp extends Model
 {
-    use HasFactory;
+    protected $table = 'otps';
 
-    protected $fillable = ['user_id', 'otp', 'expires_at'];
+    
+    protected $fillable = [
+        'user_id',
+        'email',         
+        'code',
+        'status',
+        'expires_at'
+        
+    ];
 
-    public function isExpired()
-    {
-        return $this->expires_at->isPast();
-    }
-
-    public function user()
-    {
-        return $this->belongsTo(User::class);
-    }
+    protected $date = [
+       'created_at',
+         'updated_at'
+    ];
 }
+

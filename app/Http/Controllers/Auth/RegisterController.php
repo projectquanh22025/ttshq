@@ -4,60 +4,102 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Models\Otp;
 use App\Mail\OtpMail;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\Validator;
 
 class RegisterController extends Controller
 {
     public function showRegistrationForm()
     {
-        return view('auth.register'); 
+        return view('auth.register');
     }
 
     public function register(Request $request)
     {
-        Validator::make($request->all(), [
-            'name' => 'required|string|max:255|unique:users,name',
-            'email' => 'required|string|email|max:255|unique:users,email',
-            'password' => ['required', 'string', 'min:8', 'confirmed'],
+        // Bước 1: Validate dữ liệu đăng ký
+        $validated = $request->validate([
+            'username' => 'required|string|max:255|unique:users,username',
+            // 'fullname' => 'required|string|max:255',
+            'email' => 'required|email|max:255|unique:users,email',
+            'password' => 'required|string|min:8|confirmed',
         ], [
-            'name.unique' => 'Tên người dùng đã tồn tại.',
             'email.unique' => 'Email đã được sử dụng.',
-        ])->validate();
+            'username.unique' => 'Username đã tồn tại.',
+        ]);
 
-    session([
-        'otp_email' => $request->email,
-        'register_data' => [
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-        ]
-    ]);
+        // Bước 2: Tạo user với status = 0 (chưa kích hoạt)
+        $user = User::create([
+            'username' => $validated['username'],
+            'fullname' => $validated['fullname'] ?? null, 
+            'email' => $validated['email'],
+            'account_type' => 1,
+            'is_active' => 0,
+            'password' => Hash::make($validated['password']),
+            'status' => 0,
+        ]);
 
-      
-        // Gửi OTP
+        // Bước 3: Tạo mã OTP và lưu vào bảng otps
         $otpCode = rand(100000, 999999);
         $expiresAt = now()->addSeconds(120);
 
-        DB::table('otps')->updateOrInsert(
-            ['email' => $request->email, 'user_id' => null],
-            [
-                'otp' => $otpCode,
-                'expires_at' => $expiresAt,
-                'created_at' => now(),
-                'updated_at' => now()
-            ]
-        );
+        Otp::create([
+            'user_id' => $user->id,
+            'email' => $user->email,
+            'code' => $otpCode,
+            'status' => 0, 
+            'expires_at' => $expiresAt,
+        ]);
 
-        Mail::to($request->email)->send(new OtpMail($otpCode)); 
+        // Bước 4: Gửi OTP qua email
+        Mail::to($user->email)->send(new OtpMail($otpCode));
 
-        
-         session(['otp_email' => $request->email]);
+        // Bước 5: Điều hướng tới form nhập OTP
+        return redirect()->route('otp.form', ['email' => $user->email])
+                         ->with('status', 'OTP đã được gửi. Vui lòng xác thực.');
+    }
 
-        return redirect()->route('otp.form')->with('status', 'OTP đã gửi, vui lòng xác thực.');
+    public function showOtpForm(Request $request)
+    {
+        $email = $request->query('email');
+        return view('auth.otp_form', compact('email'));
+    }
+
+    public function verifyOtp(Request $request)
+    {
+        // Validate dữ liệu từ form
+        $validated = $request->validate([
+            'email' => 'required|email',
+            'code' => 'required|string',
+        ]);
+
+        // Lấy OTP chưa xác thực, chưa hết hạn
+        $otpRecord = Otp::where('email', $validated['email'])
+                        ->where('code', $validated['code'])
+                        ->where('status', 0)
+                        ->where('expires_at', '>', now())
+                        ->first();
+
+        if (!$otpRecord) {
+            return back()->withErrors(['code' => 'Mã OTP không đúng hoặc đã hết hạn.']);
+        }
+
+        // Xác thực thành công: cập nhật user và OTP
+        $user = User::where('id', $otpRecord->user_id)->first();
+
+        if (!$user) {
+            return back()->withErrors(['email' => 'Tài khoản không tồn tại.']);
+        }
+
+        $user->update(['is_active' => 1]); // Kích hoạt tài khoản
+        $otpRecord->update(['status' => 1]); // Đánh dấu OTP đã dùng
+        $otpRecord->delete(); // Xoá OTP sau xác thực (tuỳ chọn)
+
+        // (Tùy chọn) Đăng nhập user luôn
+        // Auth::login($user);
+
+        return redirect()->route('dashboard')->with('status', 'Xác thực thành công. Tài khoản đã được kích hoạt!');
     }
 }
