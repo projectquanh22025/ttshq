@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Xác thực OTP</title>
-    <link href="{{ asset('build/assets/app.css') }}" rel="stylesheet">
+    <link href="{{ asset('build/assets/app-CmzYP1-1.css') }}" rel="stylesheet">
 </head>
 <body class="bg-gray-100 min-h-screen flex flex-col justify-center items-center py-12 px-4 sm:px-6 lg:px-8">
 
