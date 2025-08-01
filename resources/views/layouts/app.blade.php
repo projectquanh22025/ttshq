@@ -16,7 +16,9 @@
             <div class="login-aside order-2 order-lg-1 d-flex flex-row-auto position-relative overflow-hidden">
                 <div class="d-flex flex-column-fluid flex-column justify-content-between py-9 px-7 py-lg-13 px-lg-35">
                     <a href="#" class="text-center pt-2">
-                        <img src="/assets/media/logos/logo.png" class="max-h-75px" alt="Logo" />
+                        <!-- <img src="/assets/media/logos/logo.png" class="max-h-75px" alt="Logo" /> -->
+                          <!-- <img src="https://ibb.co/60pgMQb9" class="max-h-75px" alt="Logo" /> -->
+                         <img src="https://i.ibb.co/5hzB0Zvp/Logo.png"  class="max-h-75px mt-5" alt="Logo">
                     </a>
                     <div class="d-flex flex-column-fluid flex-column flex-center">
                         {{-- Chỉ chỗ này có nội dung --}}
