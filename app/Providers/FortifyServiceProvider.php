@@ -45,13 +45,16 @@ class FortifyServiceProvider extends ServiceProvider
 
         RateLimiter::for('two-factor', function (Request $request) {
             return Limit::perMinute(5)->by($request->session()->get('login.id'));
+
+
+        
         });
 
-          Event::listen(Registered::class, function ($event) {
+        //  Event::listen(Registered::class, function ($event) {
        // if (session()->has('otp_user_id')) {
-       dd('redirected');
-            redirect()->route('otp.form')->send(); // chuyển hướng ngay tới /verify-otp
+    //    dd('redirected');
+    //         redirect()->route('otp.form')->send(); // chuyển hướng ngay tới /verify-otp
        // }
-    });
+//    });
     }
 }
