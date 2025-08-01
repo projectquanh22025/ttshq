@@ -3,10 +3,7 @@
 use App\Http\Controllers\OtpController;
 use App\Http\Controllers\Auth\RegisterController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Middleware\CheckEmailVerified;use App\Http\Controllers\Auth\LoginController;
-
-
-
+use App\Http\Middleware\CheckEmailVerified;
 
 
 
