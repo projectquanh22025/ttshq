@@ -1,1 +1,62 @@
+name: Triển khai Laravel lên Server
 
+on:
+  push:
+    branches: [ "master" ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Lấy mã nguồn từ repo
+      - name: Lấy mã nguồn
+        uses: actions/checkout@v4
+
+      # 2. Cấu hình SSH
+      - name: Cấu hình SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -t ed25519 -p ${{ secrets.SSH_PORT }} -H ${{ secrets.PUBLIC_IP }} >> ~/.ssh/known_hosts
+
+      # 3. Rsync mã nguồn lên server (KHÔNG bao gồm vendor hoặc composer.lock)
+      - name: Rsync source code lên server (template)
+        run: |
+          rsync -azr --delete \
+            --exclude .git --exclude .github --exclude vendor --exclude composer.lock \
+            -e "ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa -p ${{ secrets.SSH_PORT }}" \
+            ./ root@${{ secrets.PUBLIC_IP }}:/home/quanprobxxW/quan-project.tichhop.pro/template_laravel
+
+      # 4. SSH vào VPS và thực hiện deploy bằng PHP 8.3
+      - name: Deploy trên server với PHP 8.3
+        run: |
+          ssh -i ~/.ssh/id_rsa -p ${{ secrets.SSH_PORT }} root@${{ secrets.PUBLIC_IP }} '
+            set -e
+
+            # Backup source cũ
+            mkdir -p /home/quanprobxxW/quan-project.tichhop.pro/backup_laravel &&
+            rsync -azr /home/quanprobxxW/quan-project.tichhop.pro/public_html/ /home/quanprobxxW/quan-project.tichhop.pro/backup_laravel &&
+
+            # Deploy từ template
+            rsync -azr /home/quanprobxxW/quan-project.tichhop.pro/template_laravel/ /home/quanprobxxW/quan-project.tichhop.pro/public_html &&
+
+            cd /home/quanprobxxW/quan-project.tichhop.pro/public_html
+
+            # Tự động build lại composer.lock bằng PHP 8.3 (cho phép chạy dưới root)
+            COMPOSER_ALLOW_SUPERUSER=1 php8.3 /usr/local/bin/composer update --no-dev --optimize-autoloader
+
+            # Laravel cache
+            php8.3 artisan config:cache
+            php8.3 artisan route:cache
+
+            # Quyền
+            chown -R quanprobxxW:quanprobxxW .
+            chmod -R 775 storage
+            chmod -R 775 bootstrap/cache
+
+            # Restart nginx và PHP-FPM 8.3
+            systemctl restart php8.3-fpm
+            systemctl restart nginx
+          '
