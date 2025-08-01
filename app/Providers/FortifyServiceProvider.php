@@ -47,11 +47,13 @@ class FortifyServiceProvider extends ServiceProvider
             return Limit::perMinute(5)->by($request->session()->get('login.id'));
         });
 
-          Event::listen(Registered::class, function ($event) {
-       // if (session()->has('otp_user_id')) {
-       dd('redirected');
-            redirect()->route('otp.form')->send(); // chuyển hướng ngay tới /verify-otp
-       // }
-    });
-    }
+
+    
+//           Event::listen(Registered::class, function ($event) {
+       
+//        dd('redirected');
+//             redirect()->route('otp.form')->send(); 
+    
+//     });
+     }
 }

@@ -94,8 +94,8 @@ class RegisterController extends Controller
         }
 
         $user->update(['is_active' => 1]); // Kích hoạt tài khoản
-        $otpRecord->update(['status' => 1]); // Đánh dấu OTP đã dùng
-        $otpRecord->delete(); // Xoá OTP sau xác thực (tuỳ chọn)
+        $otpRecord->update(['status' => 1]); 
+        $otpRecord->delete(); 
 
         // (Tùy chọn) Đăng nhập user luôn
         // Auth::login($user);
