@@ -9,6 +9,7 @@ use App\Http\Middleware\CheckEmailVerified;use App\Http\Controllers\Auth\LoginCo
 
 
 
+
 Route::get('/', function () {
     return view('welcome');
 });
