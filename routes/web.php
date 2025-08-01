@@ -4,7 +4,7 @@ use App\Http\Controllers\OtpController;
 use App\Http\Controllers\Auth\RegisterController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Middleware\CheckEmailVerified;
-
+use App\Http\Controllers\Auth\LoginController;
 
 
 Route::get('/', function () {
@@ -22,7 +22,7 @@ Route::middleware([
     })->name('dashboard');
 });
 
-
+Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
 
 Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('register');
 Route::post('/register', [RegisterController::class, 'register']);
