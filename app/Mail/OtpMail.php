@@ -40,7 +40,7 @@ class OtpMail extends Mailable
         return new Content(
             view: 'emails.otp', // Tên view bạn tạo
             with: [
-                'otpCode' => $this->otpCode,
+                'code' => $this->otpCode,
             ],
         );
     }

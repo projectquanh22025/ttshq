@@ -26,19 +26,19 @@ class OtpController extends Controller
     {
         $request->validate([
             'email' => 'required|email',
-            'otp_code' => 'required|digits:6',
+            'code' => 'required|digits:6',
         ]);
 
         $email = $request->input('email');
 
         $otpRecord = Otp::where('email', $email)
-                        ->where('code', $request->otp_code)
+                        ->where('code', $request->code)
                         ->where('status', 0)
                         ->where('expires_at', '>', now())
                         ->first();
 
         if (!$otpRecord) {
-            return back()->withErrors(['otp_code' => 'Mã OTP không đúng hoặc đã hết hạn.']);
+            return back()->withErrors(['code' => 'Mã OTP không đúng hoặc đã hết hạn.']);
         }
 
         // Tìm user tương ứng
