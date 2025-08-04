@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
@@ -15,9 +16,11 @@ class ForgotPasswordController extends Controller
     {
         return view('auth.forgot-password');
     }
+
     public function sendOtp(Request $request)
     {
         $request->validate(['email' => 'required|email']);
+
         $user = User::where('email', $request->email)->first();
 
         if (!$user) {
@@ -30,33 +33,40 @@ class ForgotPasswordController extends Controller
         Otp::updateOrCreate(
             ['email' => $user->email],
             ['code' => $otpCode, 'status' => 0, 'expires_at' => $expiresAt]
-
         );
 
         Mail::to($user->email)->send(new OtpMail($otpCode));
 
-         session([
-            'otp_flow' => 'forgot_password',
-            'otp_email' => $user->email
-        ]);
-
-        return redirect()->route('forgot.password.verifyOtpForm', ['email' => $user->email])
-                         ->with('status', 'Mã OTP đã được gửi qua email.');
+        return redirect()->route('forgot.password.verifyOtpForm', [
+            'email' => $user->email,
+            'flow' => 'forgot_password'  // Truyền flow để dùng chung form OTP
+        ])->with('status', 'Mã OTP đã được gửi qua email.');
     }
-     public function showOtpForm(Request $request)
+
+    public function showOtpForm(Request $request)
     {
         $email = $request->email;
-        return view('auth.verify-otp', compact('email'));
+        $flow = $request->flow;
+
+        if (!$email || !$flow) {
+            return redirect()->route('login')->withErrors(['error' => 'Thiếu thông tin email.']);
+        }
+
+        return view('auth.verify-otp', compact('email', 'flow'));
     }
 
-     public function verifyOtp(Request $request)
+    public function verifyOtp(Request $request)
     {
         $request->validate([
             'email' => 'required|email',
-            'otp_code' => 'required|size:6'
+            'otp_code' => 'required|size:6',
+            'flow' => 'required|in:forgot_password'
         ]);
 
-        $otp = Otp::where('email', $request->email)
+        $email = $request->email;
+        $flow = $request->flow;
+
+        $otp = Otp::where('email', $email)
                   ->where('code', $request->otp_code)
                   ->where('status', 0)
                   ->where('expires_at', '>', now())
@@ -66,19 +76,21 @@ class ForgotPasswordController extends Controller
             return back()->withErrors(['otp_code' => 'Mã OTP không hợp lệ hoặc đã hết hạn.']);
         }
 
-        // Cập nhật OTP đã dùng
+        // Đánh dấu OTP đã dùng
         $otp->status = 1;
         $otp->save();
 
-        return redirect()->route('forgot.password.resetForm', ['email' => $request->email]);
+        // Sau khi xác thực đúng OTP → chuyển sang form đổi mật khẩu
+        return redirect()->route('forgot.password.resetForm', ['email' => $email]);
     }
 
-     public function showResetForm(Request $request)
+    public function showResetForm(Request $request)
     {
         $email = $request->email;
         return view('auth.reset-password', compact('email'));
     }
-     public function resetPassword(Request $request)
+
+    public function resetPassword(Request $request)
     {
         $request->validate([
             'email' => 'required|email',
@@ -95,8 +107,4 @@ class ForgotPasswordController extends Controller
 
         return redirect()->route('login')->with('status', 'Đổi mật khẩu thành công. Vui lòng đăng nhập.');
     }
-
-
-
-
 }

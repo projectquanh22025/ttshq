@@ -32,6 +32,7 @@
 
         {{-- Input ẩn email --}}
         <input type="hidden" name="email" value="{{ $email }}">
+        <input type="hidden" name="flow" value="{{ $flow }}">
 
         {{-- Nhập mã OTP --}}
         <div class="form-group">
