@@ -42,8 +42,8 @@ class OtpController extends Controller
         }
 
         // Tìm user tương ứng
-        $user = User::find($otpRecord->user_id);
-
+        // $user = User::find($otpRecord->user_id);
+        $user = User::where('email', $email)->first();
         if (!$user) {
             return back()->withErrors(['email' => 'Tài khoản không tồn tại.']);
         }
@@ -58,6 +58,13 @@ class OtpController extends Controller
         // Đánh dấu OTP đã sử dụng và xoá
         $otpRecord->update(['status' => 1]);
         $otpRecord->delete();
+
+        $flow = session('otp_flow');
+
+        if ($flow === 'forgot_password') {
+            
+            return redirect()->route('forgot.password.resetForm', ['email' => $email]);
+        }
 
         // Đăng nhập user
         Auth::login($user);

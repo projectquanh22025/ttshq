@@ -1,36 +1,31 @@
-<x-guest-layout>
-    <x-authentication-card>
-        <x-slot name="logo">
-            <x-authentication-card-logo />
-        </x-slot>
+@extends('layouts.app')
 
-        <x-validation-errors class="mb-4" />
+@section('content')
+<div class="reset-password-form py-10">
+    <h2 class="mb-4">Đổi mật khẩu</h2>
 
-        <form method="POST" action="{{ route('password.update') }}">
-            @csrf
+    @if($errors->any())
+        <div class="alert alert-danger">{{ $errors->first() }}</div>
+    @endif
 
-            <input type="hidden" name="token" value="{{ $request->route('token') }}">
+    <form method="POST" action="{{ route('forgot.password.resetPassword') }}">
+        @csrf
+        <input type="hidden" name="email" value="{{ $email }}">
 
-            <div class="block">
-                <x-label for="email" value="{{ __('Email') }}" />
-                <x-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email', $request->email)" required autofocus autocomplete="username" />
-            </div>
+        <div class="form-group">
+            <label>Mật khẩu mới</label>
+            <input type="password" name="password" class="form-control" required>
+        </div>
 
-            <div class="mt-4">
-                <x-label for="password" value="{{ __('Password') }}" />
-                <x-input id="password" class="block mt-1 w-full" type="password" name="password" required autocomplete="new-password" />
-            </div>
+        <div class="form-group">
+            <label>Nhập lại mật khẩu</label>
+            <input type="password" name="password_confirmation" class="form-control" required>
+        </div>
 
-            <div class="mt-4">
-                <x-label for="password_confirmation" value="{{ __('Confirm Password') }}" />
-                <x-input id="password_confirmation" class="block mt-1 w-full" type="password" name="password_confirmation" required autocomplete="new-password" />
-            </div>
+        <button type="submit" class="btn btn-success">Đổi mật khẩu</button>
+    </form>
+</div>
+@endsection
 
-            <div class="flex items-center justify-end mt-4">
-                <x-button>
-                    {{ __('Reset Password') }}
-                </x-button>
-            </div>
-        </form>
-    </x-authentication-card>
-</x-guest-layout>
+
+
