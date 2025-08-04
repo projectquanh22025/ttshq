@@ -11,8 +11,8 @@
     @if (!$isEnabled)
         <p>Quét mã QR dưới đây bằng ứng dụng Google Authenticator:</p>
         <div class="mb-4">
-            
-            {!! $qrInline !!}
+            <img src="{{  $qrInline }}" alt="Base64 Image">
+            <!-- {!! $qrInline !!} -->
         </div>
         <p><strong>Mã bí mật:</strong> {{ $secret }}</p>
 
