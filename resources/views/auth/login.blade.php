@@ -73,7 +73,7 @@
 
         {{-- Forgot password --}}
         <div class="form-group text-right">
-            <a href="{{ route('password.request') }}" class="text-primary font-weight-bold">
+            <a href="{{ route('forgot.password.form') }}" class="text-primary font-weight-bold">
                 Forgot Password?
             </a>
         </div>
