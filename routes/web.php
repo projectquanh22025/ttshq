@@ -6,6 +6,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Middleware\CheckEmailVerified;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
+use App\Http\Controllers\Google2FAController;
+use App\Http\Middleware\Google2FAMiddleware;
 
 Route::get('/', function () {
     return view('welcome');
@@ -16,6 +18,8 @@ Route::middleware([
     config('jetstream.auth_session'),
     'verified',
     CheckEmailVerified::class,
+    Google2FAMiddleware::class,
+    //  'google2fa',
 ])->group(function () {
     Route::get('/dashboard', function () {
         return view('dashboard');
@@ -40,3 +44,11 @@ Route::post('/forgot-password/verify', [ForgotPasswordController::class, 'verify
 
 Route::get('/forgot-password/reset', [ForgotPasswordController::class, 'showResetForm'])->name('forgot.password.resetForm');
 Route::post('/forgot-password/reset', [ForgotPasswordController::class, 'resetPassword'])->name('forgot.password.resetPassword');
+
+Route::get('/2fa/setup', [Google2FAController::class, 'show2FASetupForm'])->name('2fa.setup');
+Route::post('/2fa/enable', [Google2FAController::class, 'enable2FA'])->name('2fa.enable');
+Route::post('/2fa/disable', [Google2FAController::class, 'disable2FA'])->name('2fa.disable');
+
+// Xác thực 2FA khi login
+Route::get('/2fa/verify', [Google2FAController::class, 'show2FAVerifyForm'])->name('2fa.verify.form');
+Route::post('/2fa/verify', [Google2FAController::class, 'verify2FA'])->name('2fa.verify');

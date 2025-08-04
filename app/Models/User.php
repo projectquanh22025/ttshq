@@ -9,6 +9,7 @@ use Laravel\Fortify\TwoFactorAuthenticatable;
 use Laravel\Jetstream\HasProfilePhoto;
 use Laravel\Sanctum\HasApiTokens;
 
+
 class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, HasProfilePhoto, Notifiable, TwoFactorAuthenticatable;
@@ -50,6 +51,8 @@ class User extends Authenticatable
         'google2fa_secret',
         'two_factor_recovery_codes',
     ];
+
+   
 
     /**
      * The attributes that should be cast.
