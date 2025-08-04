@@ -78,7 +78,7 @@ class LoginController extends Controller
 
             Mail::to($user->email)->send(new OtpMail($otpCode));
 
-            return redirect()->route('otp.form', ['email' => $user->email])
+            return redirect()->route('otp.form', ['email' => $user->email,'flow'=>'login'])
                              ->with('status', 'Tài khoản chưa kích hoạt. OTP đã được gửi, vui lòng xác thực.');
         }
 

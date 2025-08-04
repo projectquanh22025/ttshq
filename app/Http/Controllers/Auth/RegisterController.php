@@ -57,7 +57,7 @@ class RegisterController extends Controller
         Mail::to($user->email)->send(new OtpMail($otpCode));
 
         // Bước 5: Điều hướng tới form nhập OTP
-        return redirect()->route('otp.form', ['email' => $user->email])
+        return redirect()->route('otp.form', ['email' => $user->email,'flow'=>'register'])
                          ->with('status', 'OTP đã được gửi. Vui lòng xác thực.');
     }
 
@@ -65,6 +65,8 @@ class RegisterController extends Controller
     {
         $email = $request->query('email');
         return view('auth.otp_form', compact('email'));
+
+
     }
 
     public function verifyOtp(Request $request)
