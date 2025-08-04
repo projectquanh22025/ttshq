@@ -84,6 +84,12 @@ class LoginController extends Controller
 
         // Bước 5: Đăng nhập thành công
         Auth::login($user);
+        if ($user->google2fa_enable) {
+    
+       session()->put('2fa_verified', false);
+
+       return redirect()->route('2fa.verify.form');
+}
 
         return redirect()->route('dashboard')->with('status', 'Đăng nhập thành công!');
     }
