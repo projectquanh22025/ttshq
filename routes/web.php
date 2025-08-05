@@ -7,8 +7,8 @@ use App\Http\Middleware\CheckEmailVerified;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Google2FAController;
-use App\Http\Middleware\Google2FAMiddleware;
 use App\Http\Controllers\Auth\ProfileController;
+use App\Http\Middleware\Google2FAMiddleware;
 
 Route::get('/', function () {
     return view('welcome');
@@ -54,5 +54,10 @@ Route::post('/2fa/disable', [Google2FAController::class, 'disable2FA'])->name('2
 Route::get('/2fa/verify', [Google2FAController::class, 'show2FAVerifyForm'])->name('2fa.verify.form');
 Route::post('/2fa/verify', [Google2FAController::class, 'verify2FA'])->name('2fa.verify');
 
-Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
+Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
+
 Route::put('/profile/update', [ProfileController::class, 'update'])->name('profile.update');
+
+Route::get('/admin', function () {
+    return view('admin');
+});
