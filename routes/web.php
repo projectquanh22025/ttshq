@@ -58,6 +58,4 @@ Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.e
 
 Route::put('/profile/update', [ProfileController::class, 'update'])->name('profile.update');
 
-Route::get('/admin', function () {
-    return view('admin');
-});
+
