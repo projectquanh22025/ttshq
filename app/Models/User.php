@@ -37,6 +37,7 @@ class User extends Authenticatable
         'google2fa_enable',
         'google2fa_secret',
         'two_factor_recovery_codes',
+         'role',
     ];
 
     /**
@@ -84,4 +85,15 @@ class User extends Authenticatable
     {
         return $this->hasMany(Otp::class);
     }
+
+    public function isAdmin()
+{
+    return $this->role === 'admin';
+}
+
+   public function isUser()
+{
+    return $this->role === 'user';
+}
+
 }

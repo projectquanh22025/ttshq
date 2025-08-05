@@ -9,10 +9,16 @@ use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Google2FAController;
 use App\Http\Controllers\Auth\ProfileController;
 use App\Http\Middleware\Google2FAMiddleware;
+use App\Http\Controllers\Admin\AdminRegisterController;
+use Illuminate\Support\Facades\Auth;
+use App\Models\User;
+use App\Http\Controllers\Admin\AdminUserController;
+use App\Http\Controllers\Admin\AdminProfileController;
 
 Route::get('/', function () {
     return view('welcome');
 });
+
 
 Route::middleware([
     'auth:sanctum',
@@ -20,7 +26,6 @@ Route::middleware([
     'verified',
     CheckEmailVerified::class,
     Google2FAMiddleware::class,
-    //  'google2fa',
 ])->group(function () {
     Route::get('/dashboard', function () {
         return view('dashboard');
@@ -55,7 +60,30 @@ Route::get('/2fa/verify', [Google2FAController::class, 'show2FAVerifyForm'])->na
 Route::post('/2fa/verify', [Google2FAController::class, 'verify2FA'])->name('2fa.verify');
 
 Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
-
 Route::put('/profile/update', [ProfileController::class, 'update'])->name('profile.update');
 
+// Admin routes
+Route::get('/admin-dashboard', [AdminUserController::class, 'index'])
+    ->middleware(['auth', 'verified'])
+    ->name('admin.dashboard');
+
+Route::get('/admin/register', [AdminRegisterController::class, 'showRegisterForm'])->name('admin.register.form');
+Route::post('/admin/register', [AdminRegisterController::class, 'register'])->name('admin.register');
+
+// Logout route
+Route::post('/logout', function () {
+    Auth::logout();
+    return redirect('/login');
+})->name('logout');
+
+// Dự phòng - admin user actions
+Route::get('/admin/user/{id}/view', [AdminUserController::class, 'view'])->name('admin.user.view');
+Route::post('/admin/user/{id}/lock', [AdminUserController::class, 'lock'])->name('admin.user.lock');
+
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/admin/profile', [AdminProfileController::class, 'show'])->name('admin.profile');
+    Route::get('/admin/profile/edit', [AdminProfileController::class, 'edit'])->name('admin.profile.edit');
+    Route::put('/admin/profile/update', [AdminProfileController::class, 'update'])->name('admin.profile.update');
+});
 

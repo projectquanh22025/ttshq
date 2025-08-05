@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 
 @section('content')
 <div class="container py-4">
@@ -21,34 +21,36 @@
     @endif
 
     {{-- Form cập nhật hồ sơ --}}
-    <form method="POST" action="{{ route('profile.update') }}">
-        @csrf
-        @method('PUT')
+    <form method="POST" action="{{ route('admin.profile.update') }}">
+    @csrf
+    @method('PUT')
 
-        <div class="form-group">
-            <label for="name">Tên người dùng</label>
-            <input type="text" name="name" id="name" class="form-control" 
-                   value="{{ old('name', auth()->user()->username) }}" required>
-        </div>
+    <div class="form-group">
+        <label for="name">Tên người dùng</label>
+        <input type="text" name="name" id="name" class="form-control" 
+               value="{{ old('name', auth()->user()->username) }}" required>
+    </div>
 
-        <div class="form-group mt-3">
-            <label for="email">Email</label>
-            <input type="email" id="email" class="form-control" 
-                   value="{{ auth()->user()->email }}" disabled>
-        </div>
+    <div class="form-group mt-3">
+        <label for="email">Email</label>
+        <input type="email" id="email" class="form-control" 
+               value="{{ auth()->user()->email }}" disabled>
+    </div>
 
-        <div class="form-group mt-3">
-            <label for="password">Mật khẩu mới (nếu muốn đổi)</label>
-            <input type="password" name="password" id="password" class="form-control">
-        </div>
+    <div class="form-group mt-3">
+        <label for="password">Mật khẩu mới (nếu muốn đổi)</label>
+        <input type="password" name="password" id="password" class="form-control">
+    </div>
 
-        <div class="form-group mt-3">
-            <label for="password_confirmation">Xác nhận mật khẩu</label>
-            <input type="password" name="password_confirmation" id="password_confirmation" class="form-control">
-        </div>
+    <div class="form-group mt-3">
+        <label for="password_confirmation">Xác nhận mật khẩu</label>
+        <input type="password" name="password_confirmation" id="password_confirmation" class="form-control">
+    </div>
 
-        <button type="submit" class="btn btn-primary mt-4">Cập nhật</button>
-    </form>
+    <button type="submit" class="btn btn-primary mt-4" >Cập nhật</button>
+    
+</form>
+
 
     {{-- PHẦN XÁC THỰC 2FA --}}
     <hr class="my-5">
@@ -71,19 +73,5 @@
         <p class="text-warning">⚠ Bạn chưa bật xác thực 2 bước (2FA) để bảo vệ tài khoản an toàn hơn.</p>
         <a href="{{ route('2fa.setup') }}" class="btn btn-primary">Bật 2FA ngay</a>
     @endif
-
-    {{-- Nút Đăng xuất --}}
-    <hr class="my-5">
-    <form method="POST" action="{{ route('logout') }}">
-        @csrf
-        <button type="submit" class="btn btn-outline-secondary">
-            Đăng xuất
-        </button>
-    </form>
 </div>
 @endsection
-
-
-
-
-
