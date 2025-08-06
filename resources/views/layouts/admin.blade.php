@@ -7,6 +7,7 @@
 
     <!-- Boxicons CSS -->
     <link href='https://unpkg.com/boxicons@2.0.9/css/boxicons.min.css' rel='stylesheet'>
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
     <!-- Custom CSS -->
     <link rel="stylesheet" href="{{ asset('admin/css/style.css') }}">
     @stack('styles')
