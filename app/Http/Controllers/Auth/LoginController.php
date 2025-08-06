@@ -59,7 +59,7 @@ class LoginController extends Controller
             return redirect()->route('otp.form', [
                 'email' => $user->email,
                 'flow' => 'login'
-            ])->with('status', 'Tài khoản chưa kích hoạt. OTP đã được gửi, vui lòng xác thực.');
+            ])->with('status', 'Tài khoản đã khóa. OTP đã được gửi, vui lòng xác thực.');
         }
 
         // Đăng nhập thành công
