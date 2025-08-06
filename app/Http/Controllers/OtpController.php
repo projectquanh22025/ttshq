@@ -38,10 +38,12 @@ class OtpController extends Controller
         ]);
 
         $email = $request->input('email');
+        $code = $request->input('code');
         $flow = $request->input('flow');
 
+        // Tìm OTP hợp lệ
         $otpRecord = Otp::where('email', $email)
-                        ->where('code', $request->code)
+                        ->where('code', $code)
                         ->where('status', 0)
                         ->where('expires_at', '>', now())
                         ->first();
@@ -55,35 +57,23 @@ class OtpController extends Controller
             return back()->withErrors(['email' => 'Tài khoản không tồn tại.']);
         }
 
-        // Đánh dấu OTP đã dùng
-        $otpRecord->update(['status' => 1]);
+        // Xóa OTP sau khi dùng
         $otpRecord->delete();
 
-        // Flow xử lý
-        if ($flow === 'forgot_password') {
-            return redirect()->route('forgot.password.resetForm', ['email' => $email])
-                             ->with('status', 'Xác thực OTP thành công. Vui lòng đổi mật khẩu.');
-        }
-
-        // Nếu là đăng ký (user hoặc admin), kích hoạt tài khoản
-        if (in_array($flow, ['register', 'admin_register'])) {
+        // Kích hoạt tài khoản nếu chưa active
+        if (!$user->is_active) {
             $user->update([
-                'status' => 1,
                 'is_active' => 1,
                 'email_verified_at' => now(),
             ]);
         }
 
-        if ((in_array($flow, ['register', 'admin_register'])) || 
-       ($flow === 'login' && $user->role === 'admin' && !$user->is_active)) {
-        $user->update([
-        'status' => 1,
-        'is_active' => 1,
-        'email_verified_at' => now(),
-    ]);
-}
+        // Cập nhật status nếu đăng ký
+        if (in_array($flow, ['register', 'admin_register'])) {
+            $user->update(['status' => 1]);
+        }
 
-        // Đăng nhập user/admin sau khi xác thực
+        // Đăng nhập user/admin sau khi OTP
         Auth::login($user);
 
         // Chuyển hướng theo vai trò
@@ -95,7 +85,7 @@ class OtpController extends Controller
     }
 
     /**
-     * Gửi lại mã OTP
+     * Gửi lại OTP
      */
     public function resendOtp(Request $request)
     {
@@ -106,15 +96,18 @@ class OtpController extends Controller
             return redirect('/login')->withErrors(['error' => 'Thiếu thông tin email hoặc flow.']);
         }
 
-        $otpRecord = Otp::where('email', $email)
-                        ->where('status', 0)
-                        ->first();
+        $otpRecord = Otp::where('email', $email)->where('status', 0)->first();
 
         if (!$otpRecord) {
-            return redirect('/login')->withErrors(['error' => 'Không tìm thấy yêu cầu xác thực phù hợp.']);
+            return redirect('/login')->withErrors(['error' => 'Không tìm thấy OTP hợp lệ.']);
         }
 
-        // Tạo mã OTP mới
+        // Giới hạn gửi lại trong 30 giây
+        if ($otpRecord->updated_at->gt(now()->subSeconds(30))) {
+            return back()->withErrors(['error' => 'Vui lòng chờ 30 giây trước khi gửi lại OTP.']);
+        }
+
+        // Tạo OTP mới
         $otpCode = rand(100000, 999999);
         $expiresAt = now()->addSeconds(120);
 
@@ -125,6 +118,6 @@ class OtpController extends Controller
 
         Mail::to($email)->send(new OtpMail($otpCode));
 
-        return back()->with('status', 'Đã gửi lại mã OTP. Vui lòng kiểm tra email.');
+        return back()->with('status', 'OTP mới đã được gửi.');
     }
 }
