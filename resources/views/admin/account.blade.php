@@ -86,8 +86,14 @@
                     <i class="fas fa-lock"></i> Khóa
                 </button>
             </form>
-        
-          
+        @else
+    {{-- Nút Mở Khóa --}}
+    <form action="{{ route('admin.user.unlock', $user->id) }}" method="POST">
+        @csrf
+        <button type="submit" class="btn btn-sm btn-gradient-success text-white">
+            <i class="fas fa-unlock"></i> Mở khóa
+        </button>
+    </form>
         @endif
     </div>
 

@@ -44,12 +44,13 @@
         <!-- NAVBAR -->
         <nav>
             <i class='bx bx-menu toggle-sidebar'></i>
-            <form>
+            <form action="{{ route('admin.users.search') }}" method="GET" class="search-form">
                 <div class="form-group">
-                    <input type="text" placeholder="Tìm kiếm tài khoản...">
+                    <input type="text" name="search" placeholder="Tìm kiếm tài khoản...">
                     <i class='bx bx-search icon'></i>
                 </div>
             </form>
+            
             <div class="profile">
                 <img src="https://i.pravatar.cc/40" alt="Admin">
                 <ul class="profile-link">

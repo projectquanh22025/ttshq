@@ -13,7 +13,7 @@ class CheckEmailVerified
 
         if ($user && $user->is_active == 0) { // hoặc is_active nếu bạn dùng cột đó
             return redirect()->route('otp.form', ['email' => $user->email])
-                             ->with('warning', 'Tài khoản của bạn chưa xác thực email. Vui lòng xác thực để tiếp tục.');
+                             ->with('warning', 'Tài khoản của bạn đã bị khóa. Vui lòng xác thực để tiếp tục.');
         }
 
         return $next($request);

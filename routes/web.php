@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use App\Http\Controllers\Admin\AdminUserController;
 use App\Http\Controllers\Admin\AdminProfileController;
+use App\Http\Middleware\RoleMiddleware;
 
 Route::get('/', function () {
     return view('welcome');
@@ -26,6 +27,7 @@ Route::middleware([
     'verified',
     CheckEmailVerified::class,
     Google2FAMiddleware::class,
+    // RoleMiddleware::class . ':user', 
 ])->group(function () {
     Route::get('/dashboard', function () {
         return view('dashboard');
@@ -63,9 +65,12 @@ Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.e
 Route::put('/profile/update', [ProfileController::class, 'update'])->name('profile.update');
 
 // Admin routes
-Route::get('/admin-dashboard', [AdminUserController::class, 'index'])
-    ->middleware(['auth', 'verified'])
-    ->name('admin.dashboard');
+// Route::get('/admin-dashboard', [AdminUserController::class, 'index'])
+//     ->middleware(['auth', 'verified'])
+//     ->name('admin.dashboard');
+Route::middleware(['auth', 'verified', RoleMiddleware::class . ':admin'])->group(function () {
+    Route::get('/admin-dashboard', [AdminUserController::class, 'index'])->name('admin.dashboard');
+});
 
 Route::get('/admin/register', [AdminRegisterController::class, 'showRegisterForm'])->name('admin.register.form');
 Route::post('/admin/register', [AdminRegisterController::class, 'register'])->name('admin.register');
@@ -79,11 +84,15 @@ Route::post('/logout', function () {
 // Dự phòng - admin user actions
 Route::get('/admin/user/{id}/view', [AdminUserController::class, 'view'])->name('admin.user.view');
 Route::post('/admin/user/{id}/lock', [AdminUserController::class, 'lock'])->name('admin.user.lock');
-
+Route::post('/admin/user/{id}/unlock', [AdminUserController::class, 'unlock'])->name('admin.user.unlock');
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/admin/profile', [AdminProfileController::class, 'show'])->name('admin.profile');
     Route::get('/admin/profile/edit', [AdminProfileController::class, 'edit'])->name('admin.profile.edit');
     Route::put('/admin/profile/update', [AdminProfileController::class, 'update'])->name('admin.profile.update');
 });
+
+Route::get('/admin/users', [AdminUserController::class, 'index'])->name('admin.users.index');
+Route::get('/admin/users/search', [AdminUserController::class, 'search'])->name('admin.users.search');
+
 
