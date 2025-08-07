@@ -14,9 +14,6 @@
         </span>
     </div>
 
-    {{-- Breadcrumb --}}
- 
-
     {{-- Bảng người dùng --}}
     <div class="card shadow border-0 rounded-4 mt-3">
         <div class="card-header bg-gradient-info text-white fw-bold fs-5">
@@ -28,10 +25,10 @@
                     <thead class="table-dark">
                         <tr>
                             <th style="width: 5%;">#</th>
-                            <th style="width: 25%;"> Tên người dùng</th>
-                            <th style="width: 30%;"> Email</th>
-                            <th style="width: 20%;"> Vai trò & Trạng thái</th>
-                            <th style="width: 20%;"> Thao tác</th>
+                            <th style="width: 25%;">Tên người dùng</th>
+                            <th style="width: 30%;">Email</th>
+                            <th style="width: 20%;">Vai trò & Trạng thái</th>
+                            <th style="width: 20%;">Thao tác</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -60,43 +57,41 @@
                                     <br>
                                     @if($user->is_active)
                                         <span class="badge bg-gradient-success text-white px-2 py-1 rounded-pill mt-1">
-                                             Hoạt động
+                                            Hoạt động
                                         </span>
                                     @else
                                         <span class="badge bg-gradient-warning text-dark px-2 py-1 rounded-pill mt-1">
-                                             Chưa kích hoạt
+                                            Chưa kích hoạt
                                         </span>
                                     @endif
                                 </td>
 
                                 <td>
-                                   <div class="d-flex justify-content-center gap-2">
-        {{-- Nút Xem (button, không dùng link) --}}
-        <form action="{{ route('admin.user.view', $user->id) }}" method="GET">
-            <button type="submit" class="btn btn-sm btn-gradient-info text-white">
-                <i class="fas fa-eye"></i> Xem
-            </button>
-        </form>
+                                    <div class="d-flex justify-content-center gap-2">
+                                        {{-- Nút Xem --}}
+                                        <form action="{{ route('admin.user.view', $user->id) }}" method="GET">
+                                            <button type="submit" class="btn btn-sm btn-info btn-gradient-info text-white">
+                                                <i class="fas fa-eye"></i> Xem
+                                            </button>
+                                        </form>
 
-        {{-- Nút Khóa hoặc Mở khóa --}}
-        @if($user->is_active)
-            <form action="{{ route('admin.user.lock', $user->id) }}" method="POST">
-                @csrf
-                <button type="submit" class="btn btn-sm btn-gradient-warning text-dark">
-                    <i class="fas fa-lock"></i> Khóa
-                </button>
-            </form>
-        @else
-    {{-- Nút Mở Khóa --}}
-    <form action="{{ route('admin.user.unlock', $user->id) }}" method="POST">
-        @csrf
-        <button type="submit" class="btn btn-sm btn-gradient-success text-white">
-            <i class="fas fa-unlock"></i> Mở khóa
-        </button>
-    </form>
-        @endif
-    </div>
-
+                                        {{-- Nút Khóa hoặc Mở khóa --}}
+                                        @if($user->is_active)
+                                            <form action="{{ route('admin.user.lock', $user->id) }}" method="POST">
+                                                @csrf
+                                                <button type="submit" class="btn btn-sm btn-warning btn-gradient-warning text-dark">
+                                                    <i class="fas fa-lock"></i> Khóa
+                                                </button>
+                                            </form>
+                                        @else
+                                            <form action="{{ route('admin.user.unlock', $user->id) }}" method="POST">
+                                                @csrf
+                                                <button type="submit" class="btn btn-sm btn-success btn-gradient-success text-white">
+                                                    <i class="fas fa-unlock"></i> Mở khóa
+                                                </button>
+                                            </form>
+                                        @endif
+                                    </div>
                                 </td>
                             </tr>
                         @empty
@@ -144,7 +139,19 @@
         border: none;
     }
 
-    .btn-gradient-info:hover {
+    .btn-gradient-warning {
+        background: linear-gradient(to right, #f7971e, #ffd200);
+        border: none;
+    }
+
+    .btn-gradient-success {
+        background: linear-gradient(to right, #28a745, #8fd19e);
+        border: none;
+    }
+
+    .btn-gradient-info:hover,
+    .btn-gradient-warning:hover,
+    .btn-gradient-success:hover {
         opacity: 0.9;
     }
 
@@ -153,23 +160,5 @@
         text-align: center;
         white-space: nowrap;
     }
-    .btn-gradient-info {
-    background: linear-gradient(to right, #17a2b8, #5bc0de);
-    border: none;
-}
-.btn-gradient-warning {
-    background: linear-gradient(to right, #f7971e, #ffd200);
-    border: none;
-}
-.btn-gradient-success {
-    background: linear-gradient(to right, #28a745, #8fd19e);
-    border: none;
-}
-.btn-gradient-info:hover,
-.btn-gradient-warning:hover,
-.btn-gradient-success:hover {
-    opacity: 0.9;
-}
 </style>
 @endsection
-
