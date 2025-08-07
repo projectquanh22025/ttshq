@@ -54,13 +54,18 @@ class LoginController extends Controller
         $this->resetLoginAttempts($user->id);
 
         // Kiểm tra tài khoản kích hoạt (status)
+        // if ($user->status == 0 || $user->is_active == 0) {
+        //     $this->sendOtpForInactiveUser($user);
+        //     return redirect()->route('otp.form', [
+        //         'email' => $user->email,
+        //         'flow' => 'login'
+        //     ])->with('status', 'Tài khoản đã khóa');
+        // }
         if ($user->status == 0 || $user->is_active == 0) {
-            $this->sendOtpForInactiveUser($user);
-            return redirect()->route('otp.form', [
-                'email' => $user->email,
-                'flow' => 'login'
-            ])->with('status', 'Tài khoản đã khóa. OTP đã được gửi, vui lòng xác thực.');
-        }
+    return redirect()->back()->withErrors([
+        'email' => 'Tài khoản đã bị khóa. Vui lòng liên hệ quản trị viên.'
+    ]);
+}
 
         // Đăng nhập thành công
         Auth::login($user);

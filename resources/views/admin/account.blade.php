@@ -100,6 +100,7 @@
                                     <i class="fas fa-info-circle"></i> Không có người dùng nào.
                                 </td>
                             </tr>
+                            
                         @endforelse
                     </tbody>
                 </table>
