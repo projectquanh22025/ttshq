@@ -178,6 +178,7 @@ class LoginController extends Controller
     /**
      * Điều hướng sau khi đăng nhập dựa theo quyền
      */
+    /////////
     protected function redirectAfterLogin(User $user)
     {
         if ($user->role === 'admin') {
